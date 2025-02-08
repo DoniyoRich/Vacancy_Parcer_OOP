@@ -1,15 +1,22 @@
+from mypy.semanal_shared import paramspec_args
+
+
 class Vacancy:
-    """ Класс для работы с вакансиями. """
+    """
+    Класс для работы с вакансиями.
+    Создает объект Вакансия с некоторыми полями, выбранными из JSON ответа от API hh.ru.
+    Магические методы реализуют операции сравнения объектов Вакансия по уровню максимальной зарплаты.
+    """
     __slots__ = (
         '__id', '__name', '__area', '__alt_url', '__salary_from', '__salary_to', '__salary_max', '__experience')
 
-    __id: str  # уникальный номер вакансии
+    __id: int  # уникальный номер вакансии
     __name: str  # название вакансии
     __area: str  # регион
     __alt_url: str  # ссылка на вакансию
     __salary_from: int  # зарплата "от"
     __salary_to: int  # зарплата "до"
-    __salary_max: int | str  # зарплата максимальная
+    __salary_max: int | str  # зарплата максимальная (берется максимум от зарплат ОТ и ДО
     __experience: str  # требуемый опыт
 
     def __init__(self, id_, name, area, alt_url, salary_from, salary_to, experience) -> None:
@@ -23,24 +30,74 @@ class Vacancy:
         self.__salary_max = int(max(self.__salary_from, self.__salary_to))
         self.__experience = experience
 
-    def __lt__(self, other):
-        """ Магический метод 'меньше' """
-        return self.__salary_max < other.__salary_max
+    @property
+    def id_num(self):
+        return self.__id
 
-    def __eq__(self, other):
-        """ Магический метод 'равно' """
-        return self.__salary_max == other.__salary_max
+    @property
+    def name(self):
+        return self.__name
 
-    def __gt__(self, other):
-        """ Магический метод 'больше' """
-        return self.__salary_max > other.__salary_max
+    @property
+    def area(self):
+        return self.__area
 
-    def __str__(self):
+    @property
+    def alt_url(self):
+        return self.__alt_url
+
+    @property
+    def salary(self):
+        return self.__salary_max
+
+    @salary.setter
+    def salary(self, value):
+        self.__salary_max = value
+
+    @property
+    def experience(self):
+        return self.__experience
+
+    def __lt__(self, other) -> bool:
+        """ Магический метод сравнивает уровень зарплат по критерию 'меньше'. """
+        return self.salary < other.salary
+
+    def __eq__(self, other) -> bool:
+        """ Магический метод сравнивает уровень зарплат по критерию 'равно'. """
+        return self.salary == other.salary
+
+    def __gt__(self, other) -> bool:
+        """ Магический метод сравнивает уровень зарплат по критерию 'больше'. """
+        return self.salary > other.salary
+
+    def __str__(self) -> str:
         curr = 'руб.'
-        if not self.__salary_max:
-            self.__salary_max = 'не указана'
+        if not self.salary:
+            self.salary = 'не указана'
             curr = ''
-        return f'ID: {self.__id}, должность: {self.__name}, регион: {self.__area}, зарплата: {self.__salary_max} {curr}, требуемый опыт: {self.__experience}, ссылка на вакансию: {self.__alt_url}'
+        return f'ID: {self.id_num}, должность: {self.name}, регион: {self.area}, зарплата: {self.salary} {curr}, требуемый опыт: {self.experience}, ссылка на вакансию: {self.alt_url}'
 
-    def cast_to_object_list(self, vacancies: list[dict]):
-        pass
+    @staticmethod
+    def cast_to_object_list(vacancies: list[dict]) -> list[object]:
+        """ Метод преобразования набора данных из JSON в список объектов. """
+        vacancies_objects = []
+        for ind, vacancy in enumerate(vacancies):
+            id_ = int(vacancy['id'])
+            name = vacancy['name']
+            area = vacancy['area']['name']
+            alt_url = vacancy['alternate_url']
+            salary_from = __class__.__validate_salary(vacancy, 'from')
+            salary_to = __class__.__validate_salary(vacancy, 'to')
+            experience = vacancy['experience']['name']
+            vacancies_objects.append(__class__(id_, name, area, alt_url, salary_from, salary_to, experience))
+
+        return vacancies_objects
+
+    @classmethod
+    def __validate_salary(cls, vacancy: dict, param_to_check: str) -> float:
+        """ Метод проверяет на валидность значения полей. """
+        try:
+            salary_ = float(vacancy['salary'][param_to_check])
+        except Exception:
+            salary_ = 0
+        return salary_

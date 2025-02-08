@@ -1,17 +1,15 @@
-from src.FileSaver import FileSaver
+from src.FileSaverABS import FileSaver
 import pandas as pd
 
 
-
 class ExcelSaver(FileSaver):
-    """ Класс ... """
+    """ Класс работы с файлами Excel. Реализован метод сохранения списка вакансий в файл. """
 
-    def save_to_file(self, vacancy):
-        df = pd.DataFrame(vacancy)
-        df.to_excel('file.xlsx', index=False)
-
-    def add_vacancy(self, vacancy):
-        pass
-
-    def delete_vacancy(self, vacancy):
-        pass
+    def save_to_file(self, vacancies: list[dict], filename: str = 'vacancies') -> None:
+        """
+        Метод преобразует полученный список вакансий в датафрейм pandas
+        и сохраняет в файл формата EXCEL.
+        """
+        print("Записываю в файл EXCEL, возможно придется немного подождать...")
+        df = pd.DataFrame(vacancies)
+        df.to_excel(filename + '.xlsx', index=False)
