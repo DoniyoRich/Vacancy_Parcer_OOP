@@ -1,6 +1,5 @@
 import requests
 
-from src.JSONSaver import JSONSaver
 from src.ParserABS import Parser
 
 

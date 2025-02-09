@@ -1,6 +1,3 @@
-from mypy.semanal_shared import paramspec_args
-
-
 class Vacancy:
     """
     Класс для работы с вакансиями.
@@ -31,31 +28,35 @@ class Vacancy:
         self.__experience = experience
 
     @property
-    def id_num(self):
+    def id_num(self) -> int:
         return self.__id
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.__name
 
     @property
-    def area(self):
+    def area(self) -> str:
         return self.__area
 
     @property
-    def alt_url(self):
+    def alt_url(self) -> str:
+        """ Возвращает ссылку на вакансию. """
         return self.__alt_url
 
     @property
-    def salary(self):
+    def salary(self) -> int | str:
+        """ Возвращает значение зарплаты. """
         return self.__salary_max
 
     @salary.setter
-    def salary(self, value):
+    def salary(self, value) -> None:
+        """ Устанавливает значение зарплаты. """
         self.__salary_max = value
 
     @property
-    def experience(self):
+    def experience(self) -> str:
+        """ Возвращает требуемый опыт. """
         return self.__experience
 
     def __lt__(self, other) -> bool:
