@@ -13,7 +13,7 @@ class Vacancy:
     __alt_url: str  # ссылка на вакансию
     __salary_from: int  # зарплата "от"
     __salary_to: int  # зарплата "до"
-    __salary_max: int | str  # зарплата максимальная (берется максимум от зарплат ОТ и ДО
+    __salary_max: int  # зарплата максимальная (берется максимум от зарплат ОТ и ДО
     __experience: str  # требуемый опыт
 
     def __init__(self, id_, name, area, alt_url, salary_from, salary_to, experience) -> None:
@@ -49,10 +49,10 @@ class Vacancy:
         """ Возвращает значение зарплаты. """
         return self.__salary_max
 
-    @salary.setter
-    def salary(self, value) -> None:
-        """ Устанавливает значение зарплаты. """
-        self.__salary_max = value
+    # @salary.setter
+    # def salary(self, value) -> None:
+    #     """ Устанавливает значение зарплаты. """
+    #     self.__salary_max = value
 
     @property
     def experience(self) -> str:
@@ -73,10 +73,11 @@ class Vacancy:
 
     def __str__(self) -> str:
         curr = 'руб.'
+        salary_amount = self.salary
         if not self.salary:
-            self.salary = 'не указана'
+            salary_amount = 'не указана'
             curr = ''
-        return f'ID: {self.id_num}, должность: {self.name}, регион: {self.area}, зарплата: {self.salary} {curr}, требуемый опыт: {self.experience}, ссылка на вакансию: {self.alt_url}'
+        return f'ID: {self.id_num}, должность: {self.name}, регион: {self.area}, зарплата: {salary_amount} {curr}, требуемый опыт: {self.experience}, ссылка на вакансию: {self.alt_url}'
 
     @staticmethod
     def cast_to_object_list(vacancies: list[dict]) -> list[object]:

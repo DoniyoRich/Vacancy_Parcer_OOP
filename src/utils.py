@@ -1,7 +1,5 @@
 import os
 
-from mypy.reachability import contains_int_or_tuple_of_ints
-
 from src.constants import DATA_DIR
 
 
@@ -48,7 +46,7 @@ def output_to_console(vacancies: list[object]) -> None:
     quantity = 1
     while isinstance(quantity, int):
         try:
-            quantity = int(input("Сколько вакансий выводить за один раз?: "))
+            quantity = int(input("\nСколько вакансий выводить за один раз?: "))
             if quantity > 0: break
         except Exception:
             continue
@@ -57,8 +55,9 @@ def output_to_console(vacancies: list[object]) -> None:
         count = round(len(vacancies) / quantity)
         start, end = 0, quantity
         while count >= 0:
-            [print(vacancy) for vacancy in vacancies[start:end]]
             input()
+            [print(vacancy) for vacancy in vacancies[start:end]]
+            # input()
             start += quantity
             end += quantity
             count -= 1

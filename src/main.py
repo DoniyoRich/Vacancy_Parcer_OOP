@@ -1,10 +1,8 @@
-from mypy.util import short_type
-
 from src.ExcelSaver import ExcelSaver
 from src.HeadHunterAPI import HeadHunterAPI
-from src.UserOperations import UserOperations
 from src.Vacancy import Vacancy
 from src.JSONSaver import JSONSaver
+from src.VacancyOperationsABS import VacancyOperations
 from src.constants import USER_MENU_LIST
 from src.utils import user_menu, saving_file, output_to_console
 import os
@@ -37,7 +35,10 @@ file_name = 'vacancies_API'
 path_to_vacancies_file = os.path.join(DATA_DIR, file_name)
 
 
-class User:
+class User(VacancyOperations):
+
+    def __init__(self):
+        self.vacancies = []
 
     @staticmethod
     def intro():
@@ -51,16 +52,13 @@ class User:
               )
         print("#" * 75)
 
-    # Функция для взаимодействия с пользователем
-    @staticmethod
-    def interaction() -> list[object]:
-        # platforms = ["HeadHunter"]
-        search_query = input("Введите поисковый запрос(например, python разработчик Москва): ")
-        # search_query = 'python владивосток C++'
+    def interaction(self) -> None:
+        """ Метод взаимодействия с Пользователем. """
+        # search_query = input("Введите поисковый запрос(например, python разработчик Москва): ")
+        search_query = 'python владивосток'
 
         # Создание экземпляра класса для работы с API сайтов с вакансиями
         hh = HeadHunterAPI(search_query, path_to_vacancies_file)
-
         hh.get_vacancies()
         json_file_api = JSONSaver()
         json_file_api.save_to_file(hh.vacancies, hh.file_worker)
@@ -69,55 +67,102 @@ class User:
             print('\nВакансии найдены и сохранены в файл JSON в папке data')
         else:
             print('\nВакансий по Вашему запросу не найдено')
-
         vacancies_list = Vacancy.cast_to_object_list(hh.vacancies)
 
-        return vacancies_list  # список объектов вакансий
+        self.vacancies = vacancies_list  # список объектов вакансий
+
+    def filter_vacancies(self) -> None:
+        """ Метод фильтрации вакансий по ключевому слову. """
+        print("Отфильтровать вакансии...")
+        menu_filter = int(input(
+            '0. По ключевому слову в поле должность\n'
+            '1. По уровню зарплат (задать диапазон)\n'
+            '2. Регион\n'
+        ))
+
+    def sort_vacancies(self) -> None:
+        """ Метод сортировки вакансий по заданному полю с учетом заданного направления сортировки. """
+        print("\nПо какому полю сортировать:")
+        sort_field_matrix = {
+            0: ['id_num', 'ID'],
+            1: ['name', 'Должность'],
+            2: ['area', 'Регион'],
+            3: ['salary', 'Зарплата'],
+            4: ['experience', 'Требуемый опыт']
+        }
+        sort_field = int(input(
+            '0. ID\n'
+            '1. Должность\n'
+            '2. Регион\n'
+            '3. Зарплата\n'
+            '4. Требуемый опыт\n'
+        ))
+        print("Направление сортировки:")
+        sort_type = int(input(
+            '0. По возрастанию\n'
+            '1. По убыванию\n'
+        ))
+        self.vacancies.sort(key=lambda x: getattr(x, sort_field_matrix[sort_field][0]), reverse=bool(sort_type))
+        print(f'Вакансии отсортированы по полю "{sort_field_matrix[sort_field][1]}"')
+
+    def get_top_N(self) -> None:
+        """ Метод возвращает топ N вакансий по уровню зарплат. """
+        top_n = int(input("\nВведите количество вакансий для вывода в топ N по зарплате: "))
+        self.vacancies.sort(key=lambda x: x.salary, reverse=True)
+        # top_n_vacancies = self.vacancies[:top_n]
+        output_to_console(self.vacancies[:top_n])
+        # [print(vacancy) for vacancy in top_n_vacancies]
+        to_save = int(input("\nСохранить выборку для дальнейшей работы? (да-1, нет-0): "))
+        if to_save:
+            setattr(self, 'vacancies', self.vacancies[:top_n])
+            # vacancies = top_n_vacancies
+            print("Выборка сохранена.")
+
+    def delete_vacancies(self) -> list[dict]:
+        pass
 
 
 def main():
+    """ Основная функция программы. """
+
     user = User()
     user.intro()
-    vacancies = user.interaction()  # cписок объектов вакансий
+
+    user.interaction()
+
     user_choice = -1
     while user_choice != 0:
         user_choice = user_menu(USER_MENU_LIST)
         match user_choice:
             case 0:
+                print("\nХорошего дня! ;)")
                 break
             case 1:
-                print("Отфильтровать вакансии...")
+                user.filter_vacancies()
+                to_save = int(input("\nСохранить выборку для дальнейшей работы? (да-1, нет-0): "))
+                # if to_save:
+                #     user.vacancies = filtered_vacancies
+                #     print("Выборка сохранена.")
             case 2:
-                user_op = UserOperations()
-                user_op.sort_vacancies(vacancies)
+                user.sort_vacancies()
             case 3:
                 print("Удалить вакансии...")
             case 4:
                 json_saver = JSONSaver()
-                saving_file(vacancies, 'JSON', json_saver)
+                saving_file(user.vacancies, 'JSON', json_saver)
             case 5:
                 excel_saver = ExcelSaver()
-                saving_file(vacancies, 'Excel', excel_saver)
+                saving_file(user.vacancies, 'Excel', excel_saver)
             case 6:
-                print("Сделать выборку вакансий из топ зарплат")
+                user.get_top_N()
             case 7:
-                output_to_console(vacancies)
+                output_to_console(user.vacancies)
 
 
-# top_n = int(input("Введите количество вакансий для вывода в топ N: "))
-
-
-# filter_words = input(
-#     f"Введите ключевые слова для фильтрации вакансий (например, {choice(position)} {choice(cities)}): ").split()
 # salary_range = input("Введите через пробел диапазон зарплат: (например, '100000 150000'): ").split()
 
-# Сохранение информации о вакансиях в файл
-# json_saver = JSONSaver()
-# json_saver.delete_vacancy(vacancy)
 # filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
 # ranged_vacancies = get_vacancies_by_salary(filtered_vacancies, salary_range)
-# sorted_vacancies = sort_vacancies(ranged_vacancies)
-# top_vacancies = get_top_vacancies(sorted_vacancies, top_n)
 
 
 if __name__ == "__main__":
