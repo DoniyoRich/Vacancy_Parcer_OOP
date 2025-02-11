@@ -3,36 +3,12 @@ from src.HeadHunterAPI import HeadHunterAPI
 from src.Vacancy import Vacancy
 from src.JSONSaver import JSONSaver
 from src.VacancyOperationsABS import VacancyOperations
-from src.constants import USER_MENU_LIST
-from src.utils import user_menu, saving_file, output_to_console
+from src.constants import USER_MENU_LIST, DATA_DIR, SORT_TYPE, SORT_FIELDS, FILTER_MENU, SORT_FIELD_MATRIX, \
+    FILE_NAME_API
+from src.utils import user_menu, saving_file, output_to_console, ask_to_save
 import os
-from constants import DATA_DIR, LOGS
 
-import logging
-
-# Создание логгера
-app_logger = logging.getLogger(__name__)
-app_logger.setLevel(logging.INFO)
-
-# Создание форматтера для определения формата лога
-formatter = logging.Formatter('%(asktime)s - %(levelname)s - %(message)s')
-
-# Создание файлового обработчика для записи логов в файл
-file_handler = logging.FileHandler(LOGS)
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(formatter)
-
-# Создание обработчика для записи логов в консоль
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
-# console_handler.setFormatter(formatter)
-
-# Добавление обработчиков к логгеру
-app_logger.addHandler(file_handler)
-app_logger.addHandler(console_handler)
-
-file_name = 'vacancies_API'
-path_to_vacancies_file = os.path.join(DATA_DIR, file_name)
+path_to_vacancies_file = os.path.join(DATA_DIR, FILE_NAME_API)
 
 
 class User(VacancyOperations):
@@ -67,56 +43,39 @@ class User(VacancyOperations):
             print('\nВакансии найдены и сохранены в файл JSON в папке data')
         else:
             print('\nВакансий по Вашему запросу не найдено')
-        vacancies_list = Vacancy.cast_to_object_list(hh.vacancies)
-
-        self.vacancies = vacancies_list  # список объектов вакансий
+        self.vacancies = Vacancy.cast_to_object_list(hh.vacancies)  # список объектов вакансий
 
     def filter_vacancies(self) -> None:
         """ Метод фильтрации вакансий по ключевому слову. """
-        print("Отфильтровать вакансии...")
-        menu_filter = int(input(
-            '0. По ключевому слову в поле должность\n'
-            '1. По уровню зарплат (задать диапазон)\n'
-            '2. Регион\n'
-        ))
+        user_choice = user_menu(FILTER_MENU)
+        match user_choice:
+            case 0:
+                print("По ключевому слову\n")
+            case 1:
+                print("По уровню зарплат (задать диапазон)\n")
+            case 2:
+                print("По региону\n")
+        ask_to_save(self, 'filter')
 
     def sort_vacancies(self) -> None:
         """ Метод сортировки вакансий по заданному полю с учетом заданного направления сортировки. """
         print("\nПо какому полю сортировать:")
-        sort_field_matrix = {
-            0: ['id_num', 'ID'],
-            1: ['name', 'Должность'],
-            2: ['area', 'Регион'],
-            3: ['salary', 'Зарплата'],
-            4: ['experience', 'Требуемый опыт']
-        }
-        sort_field = int(input(
-            '0. ID\n'
-            '1. Должность\n'
-            '2. Регион\n'
-            '3. Зарплата\n'
-            '4. Требуемый опыт\n'
-        ))
+        sort_field_choice = user_menu(SORT_FIELDS)
+
         print("Направление сортировки:")
-        sort_type = int(input(
-            '0. По возрастанию\n'
-            '1. По убыванию\n'
-        ))
-        self.vacancies.sort(key=lambda x: getattr(x, sort_field_matrix[sort_field][0]), reverse=bool(sort_type))
-        print(f'Вакансии отсортированы по полю "{sort_field_matrix[sort_field][1]}"')
+        sort_type_choice = user_menu(SORT_TYPE)
+
+        self.vacancies.sort(key=lambda x: getattr(x,
+                                                  SORT_FIELD_MATRIX[sort_field_choice][0]),
+                            reverse=bool(sort_type_choice))
+        print(f'Вакансии отсортированы по полю "{SORT_FIELD_MATRIX[sort_field_choice][1]}"')
 
     def get_top_N(self) -> None:
         """ Метод возвращает топ N вакансий по уровню зарплат. """
         top_n = int(input("\nВведите количество вакансий для вывода в топ N по зарплате: "))
         self.vacancies.sort(key=lambda x: x.salary, reverse=True)
-        # top_n_vacancies = self.vacancies[:top_n]
         output_to_console(self.vacancies[:top_n])
-        # [print(vacancy) for vacancy in top_n_vacancies]
-        to_save = int(input("\nСохранить выборку для дальнейшей работы? (да-1, нет-0): "))
-        if to_save:
-            setattr(self, 'vacancies', self.vacancies[:top_n])
-            # vacancies = top_n_vacancies
-            print("Выборка сохранена.")
+        ask_to_save(self, 'get_top', top_n)
 
     def delete_vacancies(self) -> list[dict]:
         pass
@@ -139,10 +98,6 @@ def main():
                 break
             case 1:
                 user.filter_vacancies()
-                to_save = int(input("\nСохранить выборку для дальнейшей работы? (да-1, нет-0): "))
-                # if to_save:
-                #     user.vacancies = filtered_vacancies
-                #     print("Выборка сохранена.")
             case 2:
                 user.sort_vacancies()
             case 3:

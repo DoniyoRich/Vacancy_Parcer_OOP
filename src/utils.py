@@ -1,6 +1,6 @@
 import os
 
-from src.constants import DATA_DIR
+from src.constants import DATA_DIR, YES_NO_CHOICE
 
 
 def convert_to_list(vacancies: list[object]) -> list[dict]:
@@ -21,13 +21,14 @@ def user_menu(menu_list: list[str]) -> int:
     """ Функция возвращает корректный выбор операции над списком вакансий от Пользователя. """
     user_choice = -1
     while not user_choice in list(range(len(menu_list))):
-        print('\nВыберите тип операции (нажмите цифру из списка):\n')
+        print('\nВыберите действие:\n')
         [print(menu_item) for menu_item in menu_list]
         try:
             user_choice = int(input('Ваш выбор: '))
-        except ValueError:
+        except Exception:
             print('Пожалуйста, введите число из списка..')
-        return user_choice
+            continue
+    return user_choice
 
 
 def saving_file(vacancies: list[object], file_type: str, saver: object) -> None:
@@ -35,9 +36,20 @@ def saving_file(vacancies: list[object], file_type: str, saver: object) -> None:
     file_vacancies = convert_to_list(vacancies)
     saver.save_to_file(file_vacancies, os.path.join(DATA_DIR, filename))
     ext = '.json'
-    if file_type == 'Excel':
-        ext = '.xlsx'
+    if file_type == 'Excel': ext = '.xlsx'
     print(f'Файл "{filename}{ext}" сохранен.')
+
+
+def ask_to_save(obj: object, who_asked: str, top_n: int = 1):
+    print("Сохранить выборку для дальнейшей работы?")
+    if user_menu(YES_NO_CHOICE) == 1:
+        if who_asked == 'get_top':
+            setattr(obj, 'vacancies', obj.vacancies[:top_n])
+            print("Выборка топ зарплат сохранена.")
+        elif who_asked == 'filter':
+            print("Выборка после фильтрации сохранена.")
+    else:
+        print("Выборка не сохранена.")
 
 
 def output_to_console(vacancies: list[object]) -> None:
@@ -57,7 +69,6 @@ def output_to_console(vacancies: list[object]) -> None:
         while count >= 0:
             input()
             [print(vacancy) for vacancy in vacancies[start:end]]
-            # input()
             start += quantity
             end += quantity
             count -= 1

@@ -49,11 +49,6 @@ class Vacancy:
         """ Возвращает значение зарплаты. """
         return self.__salary_max
 
-    # @salary.setter
-    # def salary(self, value) -> None:
-    #     """ Устанавливает значение зарплаты. """
-    #     self.__salary_max = value
-
     @property
     def experience(self) -> str:
         """ Возвращает требуемый опыт. """
