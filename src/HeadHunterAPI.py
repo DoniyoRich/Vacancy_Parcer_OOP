@@ -10,7 +10,7 @@ class HeadHunterAPI(Parser):
     def __init__(self, search: str, file_worker: str = 'vacancies_api.json') -> None:
         self.url = 'https://api.hh.ru/vacancies'
         self.headers: dict = {'User-Agent': 'HH-User-Agent'}
-        self.params: dict = {'text': '', 'page': 0, 'per_page': 10, 'host': 'hh.ru'}
+        self.params: dict = {'text': '', 'page': 0, 'per_page': 100, 'host': 'hh.ru'}
         self.vacancies: list[dict] = []
         self.search = search
         self.file_worker = file_worker

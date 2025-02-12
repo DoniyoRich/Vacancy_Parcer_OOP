@@ -1,93 +1,29 @@
 from src.ExcelSaver import ExcelSaver
-from src.HeadHunterAPI import HeadHunterAPI
-from src.Vacancy import Vacancy
 from src.JSONSaver import JSONSaver
-from src.VacancyOperationsABS import VacancyOperations
-from src.constants import USER_MENU_LIST, DATA_DIR, SORT_TYPE, SORT_FIELDS, FILTER_MENU, SORT_FIELD_MATRIX, \
-    FILE_NAME_API
-from src.utils import user_menu, saving_file, output_to_console, ask_to_save
-import os
-
-path_to_vacancies_file = os.path.join(DATA_DIR, FILE_NAME_API)
+from src.User import User
+from src.constants import USER_MENU_LIST
+from src.utils import user_menu, saving_file, output_to_console
 
 
-class User(VacancyOperations):
-
-    def __init__(self):
-        self.vacancies = []
-
-    @staticmethod
-    def intro():
-        """ Приветствие Пользователя и описание работы программы. """
-        print('\n' + "#" * 75)
-        print("Добро пожаловать в программу получения и обработки вакансий с сайта hh.ru.\n"
-              "Программа позволяет получить набор вакансий по Вашему запросу\n"
-              "и вывести их в файл формата JSON.\n"
-              "Полученные данные также можно фильтровать, сортировать, удалять,\n"
-              "и результат записать в отдельный файл формата JSON или EXCEL."
-              )
-        print("#" * 75)
-
-    def interaction(self) -> None:
-        """ Метод взаимодействия с Пользователем. """
-        # search_query = input("Введите поисковый запрос(например, python разработчик Москва): ")
-        search_query = 'python владивосток'
-
-        # Создание экземпляра класса для работы с API сайтов с вакансиями
-        hh = HeadHunterAPI(search_query, path_to_vacancies_file)
-        hh.get_vacancies()
-        json_file_api = JSONSaver()
-        json_file_api.save_to_file(hh.vacancies, hh.file_worker)
-
-        if hh.vacancies:
-            print('\nВакансии найдены и сохранены в файл JSON в папке data')
-        else:
-            print('\nВакансий по Вашему запросу не найдено')
-        self.vacancies = Vacancy.cast_to_object_list(hh.vacancies)  # список объектов вакансий
-
-    def filter_vacancies(self) -> None:
-        """ Метод фильтрации вакансий по ключевому слову. """
-        user_choice = user_menu(FILTER_MENU)
-        match user_choice:
-            case 0:
-                print("По ключевому слову\n")
-            case 1:
-                print("По уровню зарплат (задать диапазон)\n")
-            case 2:
-                print("По региону\n")
-        ask_to_save(self, 'filter')
-
-    def sort_vacancies(self) -> None:
-        """ Метод сортировки вакансий по заданному полю с учетом заданного направления сортировки. """
-        print("\nПо какому полю сортировать:")
-        sort_field_choice = user_menu(SORT_FIELDS)
-
-        print("Направление сортировки:")
-        sort_type_choice = user_menu(SORT_TYPE)
-
-        self.vacancies.sort(key=lambda x: getattr(x,
-                                                  SORT_FIELD_MATRIX[sort_field_choice][0]),
-                            reverse=bool(sort_type_choice))
-        print(f'Вакансии отсортированы по полю "{SORT_FIELD_MATRIX[sort_field_choice][1]}"')
-
-    def get_top_N(self) -> None:
-        """ Метод возвращает топ N вакансий по уровню зарплат. """
-        top_n = int(input("\nВведите количество вакансий для вывода в топ N по зарплате: "))
-        self.vacancies.sort(key=lambda x: x.salary, reverse=True)
-        output_to_console(self.vacancies[:top_n])
-        ask_to_save(self, 'get_top', top_n)
-
-    def delete_vacancies(self) -> list[dict]:
-        pass
+def intro():
+    """ Приветствие Пользователя и описание работы программы. """
+    print('\n' + "#" * 75)
+    print("Добро пожаловать в программу получения и обработки вакансий с сайта hh.ru.\n"
+          "Программа позволяет получить набор вакансий по Вашему запросу\n"
+          "и вывести их в файл формата JSON.\n"
+          "Полученные данные также можно фильтровать, сортировать, удалять,\n"
+          "и результат записать в отдельный файл формата JSON или EXCEL."
+          )
+    print("#" * 75)
 
 
 def main():
     """ Основная функция программы. """
 
     user = User()
-    user.intro()
+    intro()
 
-    user.interaction()
+    user.query_to_search()
 
     user_choice = -1
     while user_choice != 0:

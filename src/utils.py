@@ -40,13 +40,14 @@ def saving_file(vacancies: list[object], file_type: str, saver: object) -> None:
     print(f'Файл "{filename}{ext}" сохранен.')
 
 
-def ask_to_save(obj: object, who_asked: str, top_n: int = 1):
+def ask_to_save(obj: object, who_asked: str, top_n: int = 1, filtered: list = None):
     print("Сохранить выборку для дальнейшей работы?")
     if user_menu(YES_NO_CHOICE) == 1:
         if who_asked == 'get_top':
             setattr(obj, 'vacancies', obj.vacancies[:top_n])
             print("Выборка топ зарплат сохранена.")
         elif who_asked == 'filter':
+            setattr(obj, 'vacancies', filtered)
             print("Выборка после фильтрации сохранена.")
     else:
         print("Выборка не сохранена.")
