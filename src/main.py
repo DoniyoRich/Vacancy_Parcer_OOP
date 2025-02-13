@@ -37,7 +37,7 @@ def main():
             case 2:
                 user.sort_vacancies()
             case 3:
-                print("Удалить вакансии...")
+                user.delete_vacancies()
             case 4:
                 json_saver = JSONSaver()
                 saving_file(user.vacancies, 'JSON', json_saver)
@@ -48,12 +48,6 @@ def main():
                 user.get_top_N()
             case 7:
                 output_to_console(user.vacancies)
-
-
-# salary_range = input("Введите через пробел диапазон зарплат: (например, '100000 150000'): ").split()
-
-# filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
-# ranged_vacancies = get_vacancies_by_salary(filtered_vacancies, salary_range)
 
 
 if __name__ == "__main__":

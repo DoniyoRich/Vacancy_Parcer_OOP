@@ -40,22 +40,18 @@ def saving_file(vacancies: list[object], file_type: str, saver: object) -> None:
     print(f'Файл "{filename}{ext}" сохранен.')
 
 
-def ask_to_save(obj: object, who_asked: str, top_n: int = 1, filtered: list = None):
+def ask_to_save(obj: object, filtered: list = None):
     print("Сохранить выборку для дальнейшей работы?")
     if user_menu(YES_NO_CHOICE) == 1:
-        if who_asked == 'get_top':
-            setattr(obj, 'vacancies', obj.vacancies[:top_n])
-            print("Выборка топ зарплат сохранена.")
-        elif who_asked == 'filter':
-            setattr(obj, 'vacancies', filtered)
-            print("Выборка после фильтрации сохранена.")
+        setattr(obj, 'vacancies', filtered)
+        print("Выборка сохранена.")
     else:
         print("Выборка не сохранена.")
 
 
 def output_to_console(vacancies: list[object]) -> None:
     """ Вывод вакансий в консоль. Задается количество выводимых вакансий за один раз. """
-    print(f"Найдено вакансий: {len(vacancies)}")
+    print(f"Осталось вакансий: {len(vacancies)}")
     quantity = 1
     while isinstance(quantity, int):
         try:
