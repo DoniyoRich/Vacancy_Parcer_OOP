@@ -1,3 +1,6 @@
+from typing import Any
+
+
 class Vacancy:
     """
     Класс для работы с вакансиями.
@@ -29,14 +32,17 @@ class Vacancy:
 
     @property
     def id_num(self) -> int:
+        """ Возвращает ID вакансии. """
         return self.__id
 
     @property
     def name(self) -> str:
+        """ Возвращает значение поля Должность. """
         return self.__name
 
     @property
     def area(self) -> str:
+        """ Возвращает значение поля Регион. """
         return self.__area
 
     @property
@@ -67,6 +73,7 @@ class Vacancy:
         return self.salary > other.salary
 
     def __str__(self) -> str:
+        """ Магический метод возвращает строку в заданном формате. """
         curr = 'руб.'
         salary_amount = self.salary
         if not self.salary:
@@ -75,26 +82,26 @@ class Vacancy:
         return f'ID: {self.id_num}, должность: {self.name}, регион: {self.area}, зарплата: {salary_amount} {curr}, требуемый опыт: {self.experience}, ссылка на вакансию: {self.alt_url}'
 
     @staticmethod
-    def cast_to_object_list(vacancies: list[dict]) -> list[object]:
-        """ Метод преобразования набора данных из JSON в список объектов. """
+    def cast_to_object_list(vacancies: list[dict]) -> list[Any]:
+        """ Статический метод преобразования набора данных из JSON в список объектов. """
         vacancies_objects = []
         for ind, vacancy in enumerate(vacancies):
             id_ = int(vacancy['id'])
             name = vacancy['name']
             area = vacancy['area']['name']
             alt_url = vacancy['alternate_url']
-            salary_from = __class__.__validate_salary(vacancy, 'from')
-            salary_to = __class__.__validate_salary(vacancy, 'to')
+            salary_from = Vacancy.__validate_salary(vacancy, 'from')
+            salary_to = Vacancy.__validate_salary(vacancy, 'to')
             experience = vacancy['experience']['name']
-            vacancies_objects.append(__class__(id_, name, area, alt_url, salary_from, salary_to, experience))
+            vacancies_objects.append(Vacancy(id_, name, area, alt_url, salary_from, salary_to, experience))
 
         return vacancies_objects
 
     @classmethod
-    def __validate_salary(cls, vacancy: dict, param_to_check: str) -> float:
-        """ Метод проверяет на валидность значения полей. """
+    def __validate_salary(cls, vacancy: dict, param_to_check: str) -> int:
+        """ Класс-метод проверяет на валидность значения полей Зарплаты. """
         try:
-            salary_ = float(vacancy['salary'][param_to_check])
+            salary_ = int(vacancy['salary'][param_to_check])
         except Exception:
             salary_ = 0
         return salary_

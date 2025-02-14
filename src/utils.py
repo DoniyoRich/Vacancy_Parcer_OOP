@@ -1,9 +1,10 @@
 import os
+from typing import Any
 
 from src.constants import DATA_DIR, YES_NO_CHOICE
 
 
-def convert_to_list(vacancies: list[object]) -> list[dict]:
+def convert_to_list(vacancies: list[Any]) -> list[dict]:
     """ Функция создает список словарей вакансий из списка объектов вакансий. """
     vacancies_list = [
         {'ID': vacancy.id_num,
@@ -18,9 +19,9 @@ def convert_to_list(vacancies: list[object]) -> list[dict]:
 
 
 def user_menu(menu_list: list[str]) -> int:
-    """ Функция возвращает корректный выбор операции над списком вакансий от Пользователя. """
+    """ Функция возвращает целое число - выбор Пользователя. """
     user_choice = -1
-    while not user_choice in list(range(len(menu_list))):
+    while user_choice not in list(range(len(menu_list))):
         print('\nВыберите действие:\n')
         [print(menu_item) for menu_item in menu_list]
         try:
@@ -31,16 +32,25 @@ def user_menu(menu_list: list[str]) -> int:
     return user_choice
 
 
-def saving_file(vacancies: list[object], file_type: str, saver: object) -> None:
+def saving_file(vacancies: list[Any], file_type: str, saver: Any) -> None:
+    """
+    Функция вызывает метод сохранения в файл json или excel
+    в зависимости от поступившего на вход объекта и типа расширения файла.
+    """
     filename = input(f"Введите имя {file_type} файла: ")
     file_vacancies = convert_to_list(vacancies)
     saver.save_to_file(file_vacancies, os.path.join(DATA_DIR, filename))
     ext = '.json'
-    if file_type == 'Excel': ext = '.xlsx'
+    if file_type == 'Excel':
+        ext = '.xlsx'
     print(f'Файл "{filename}{ext}" сохранен.')
 
 
-def ask_to_save(obj: object, filtered: list = None):
+def ask_to_save(obj: object, filtered: list[Any]) -> None:
+    """
+    Функция запрашивает у Пользователя о необходимости сохранения выборки
+    после произведенных операций с набором данных.
+    """
     print("Сохранить выборку для дальнейшей работы?")
     if user_menu(YES_NO_CHOICE) == 1:
         setattr(obj, 'vacancies', filtered)
@@ -56,7 +66,8 @@ def output_to_console(vacancies: list[object]) -> None:
     while isinstance(quantity, int):
         try:
             quantity = int(input("\nСколько вакансий выводить за один раз?: "))
-            if quantity > 0: break
+            if quantity > 0:
+                break
         except Exception:
             continue
     if len(vacancies):

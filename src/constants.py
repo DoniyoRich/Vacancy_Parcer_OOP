@@ -3,7 +3,6 @@ from pathlib import Path
 
 BASE_DIR = str(Path(__file__).parent.parent)
 DATA_DIR = BASE_DIR + '\\data\\'
-LOGS = BASE_DIR + '\\logs\\logs.log'
 
 FILE_NAME_API = 'VACANCIES_API'
 PATH_TO_VACANCIES_FILE = os.path.join(DATA_DIR, FILE_NAME_API)

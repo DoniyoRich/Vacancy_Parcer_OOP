@@ -15,7 +15,7 @@ class VacancyOperations(ABC):
         pass
 
     @abstractmethod
-    def get_top_N(self) -> None:
+    def get_top_n(self) -> None:
         """ Метод возвращает топ N вакансий по уровню зарплат. """
         pass
 
