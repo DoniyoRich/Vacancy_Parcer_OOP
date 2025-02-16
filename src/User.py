@@ -20,8 +20,8 @@ class User(VacancyOperations):
 
     def query_to_search(self) -> None:
         """ Метод взаимодействия с Пользователем. Запрашивает строку для поиска вакансий. """
-        # search_query = input("Введите поисковый запрос(например, python разработчик Москва): ")
-        search_query = 'python владивосток'
+        search_query = input("Введите поисковый запрос(например, python разработчик Москва): ")
+        # search_query = 'python владивосток'
 
         # Создание экземпляра класса для работы с API сайтов с вакансиями
         hh = HeadHunterAPI(search_query, PATH_TO_VACANCIES_FILE)

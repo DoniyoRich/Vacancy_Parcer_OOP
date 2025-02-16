@@ -5,6 +5,7 @@ from src.User import User
 from src.utils import output_to_console, saving_file, user_menu
 
 
+# pragma: no cover
 def intro() -> None:
     """ Приветствие Пользователя и описание работы программы. """
     print('\n' + "#" * 75)

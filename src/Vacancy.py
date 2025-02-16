@@ -25,8 +25,14 @@ class Vacancy:
         self.__name = name
         self.__area = area
         self.__alt_url = alt_url
-        self.__salary_from = salary_from
-        self.__salary_to = salary_to
+        if isinstance(salary_from, int):
+            self.__salary_from = salary_from
+        else:
+            self.__salary_from = 0
+        if isinstance(salary_to, int):
+            self.__salary_to = salary_to
+        else:
+            self.__salary_to = 0
         self.__salary_max = int(max(self.__salary_from, self.__salary_to))
         self.__experience = experience
 

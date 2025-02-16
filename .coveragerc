@@ -1,0 +1,6 @@
+[run]
+omit =
+	constants.py
+	FileSaverABS.py
+	ParserABS.py
+	VacancyOperationsABS.py
