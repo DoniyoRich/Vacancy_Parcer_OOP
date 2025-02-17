@@ -96,8 +96,8 @@ class Vacancy:
             name = vacancy['name']
             area = vacancy['area']['name']
             alt_url = vacancy['alternate_url']
-            salary_from = Vacancy.__validate_salary(vacancy, 'from')
-            salary_to = Vacancy.__validate_salary(vacancy, 'to')
+            salary_from = Vacancy.validate(vacancy, 'from')
+            salary_to = Vacancy.validate(vacancy, 'to')
             experience = vacancy['experience']['name']
             vacancies_objects.append(Vacancy(id_, name, area, alt_url, salary_from, salary_to, experience))
 
@@ -111,3 +111,7 @@ class Vacancy:
         except Exception:
             salary_ = 0
         return salary_
+
+    @classmethod
+    def validate(cls, vacancy: dict, param_to_check: str):
+        return cls.__validate_salary(vacancy, param_to_check)

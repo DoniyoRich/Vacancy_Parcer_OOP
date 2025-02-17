@@ -3,7 +3,7 @@ from unittest.mock import patch
 from src.HeadHunterAPI import HeadHunterAPI
 
 
-def test_hh_init():
+def test_hh_init() -> None:
     """ Тест инициализации экземпляра класса HeadHunterAPI. """
     hh_test = HeadHunterAPI('python', 'vacancies.json')
     assert hh_test.url == 'https://api.hh.ru/vacancies'
@@ -15,7 +15,7 @@ def test_hh_init():
 
 
 @patch('requests.get')
-def test_hh_load_vacancies(mock_get, some_json_from_api, lisf_of_dicts_api, capsys):
+def test_hh_load_vacancies(mock_get, some_json_from_api, lisf_of_dicts_api, capsys) -> None:
     """ Тест получения вакансий. """
     hh_test = HeadHunterAPI('python Москва')
     with patch.object(hh_test, 'params', {'text': '', 'page': 19, 'per_page': 1, 'host': 'hh.ru'}):
@@ -30,7 +30,7 @@ def test_hh_load_vacancies(mock_get, some_json_from_api, lisf_of_dicts_api, caps
 
 
 @patch('requests.get')
-def test_hh_load_vacancies_fail(mock_get, capsys):
+def test_hh_load_vacancies_fail(mock_get, capsys) -> None:
     """ Тест на неудачный запрос. """
     hh_test = HeadHunterAPI('python Москва')
     with patch.object(hh_test, 'params', {'text': '', 'page': 19, 'per_page': 1, 'host': 'hh.ru'}):

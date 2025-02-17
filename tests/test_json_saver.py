@@ -3,7 +3,8 @@ from unittest.mock import mock_open, patch
 from src.JSONSaver import JSONSaver
 
 
-def test_save_to_file(some_list_of_vacancies):
+def test_save_to_file(some_list_of_vacancies) -> None:
+    """ Тест на сохранение файла формата json. """
     file_name = "test"
     with patch('builtins.open', mock_open()) as mocked_file:
         saver = JSONSaver()

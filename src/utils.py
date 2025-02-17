@@ -7,7 +7,7 @@ from src.constants import DATA_DIR, YES_NO_CHOICE
 def convert_to_list(vacancies: list[Any]) -> list[dict]:
     """ Функция создает список словарей вакансий из списка объектов вакансий. """
     vacancies_list = [
-        {'ID': vacancy.id_num,
+        {'ID': int(vacancy.id_num),
          'должность': vacancy.name,
          'регион': vacancy.area,
          'зарплата': vacancy.salary,
