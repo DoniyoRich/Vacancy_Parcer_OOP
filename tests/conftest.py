@@ -89,3 +89,34 @@ def some_test_list_of_objects():
         Vacancy('98743216', 'Senior Python Developer', 'Москва', 'http://blabla68.ru', 350000, 400000, '6 лет и более'),
         Vacancy('32198752', 'QA тестировщик', 'Екатеринбург', 'http://blabla77.ru', 140000, 160000, 'от 3 лет')
     ]
+
+
+@pytest.fixture
+def sorted_vacancies():
+    return [
+        Vacancy('98743216', 'Senior Python Developer', 'Москва', 'http://blabla68.ru', 350000, 400000, '6 лет и более'),
+        Vacancy('98435481', 'Middle+ Python developer', 'Москва', 'http://blabla44.ru', None, 250000, 'от 3 до 6 лет'),
+        Vacancy('98432455', 'Junior-разработчик Java', 'Москва', 'http://blabla33.ru', 80000, None, 'без опыта'),
+        Vacancy('65432498', 'Junior python developer', 'Хабаровск', 'http://blabla22.ru', 70000, 90000, 'без опыта'),
+        Vacancy('32198752', 'QA тестировщик', 'Екатеринбург', 'http://blabla77.ru', 140000, 160000, 'от 3 лет'),
+        Vacancy('32113874', 'Системный аналитик', 'Краснодар', 'http://blabla55.ru', 10000, 15000, 'от 3 лет'),
+        Vacancy('21596875', 'Разработчик Python', 'Москва', 'http://blabla11.ru', 100000, 120000, 'от 1 года')
+    ]
+
+
+@pytest.fixture
+def top_3_vacancies():
+    return [
+        Vacancy('98743216', 'Senior Python Developer', 'Москва', 'http://blabla68.ru', 350000, 400000, '6 лет и более'),
+        Vacancy('98435481', 'Middle+ Python developer', 'Москва', 'http://blabla44.ru', None, 250000, 'от 3 до 6 лет'),
+        Vacancy('32198752', 'QA тестировщик', 'Екатеринбург', 'http://blabla77.ru', 140000, 160000, 'от 3 лет')
+    ]
+
+
+@pytest.fixture
+def after_deletion():
+    return [
+        Vacancy('98432455', 'Junior-разработчик Java', 'Москва', 'http://blabla33.ru', 80000, None, 'без опыта'),
+        Vacancy('32113874', 'Системный аналитик', 'Краснодар', 'http://blabla55.ru', 10000, 15000, 'от 3 лет'),
+        Vacancy('32198752', 'QA тестировщик', 'Екатеринбург', 'http://blabla77.ru', 140000, 160000, 'от 3 лет')
+    ]

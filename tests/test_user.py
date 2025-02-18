@@ -1,18 +1,33 @@
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
 from src.HeadHunterAPI import HeadHunterAPI
+from src.JSONSaver import JSONSaver
 from src.User import User
+from src.Vacancy import Vacancy
 from src.constants import FILTER_MENU
 
 
-# @patch('src.HeadHunterAPI.get_vacancies')
-# @patch('builtins.input', return_value='python')
-# def test_query_to_search(mocked_input, mocked_HH_API):
-#     hh_test = HeadHunterAPI(mocked_input.return_value, file_worker='test')
+@patch.object(Vacancy, 'cast_to_object_list')
+@patch.object(JSONSaver, 'save_to_file')
+@patch.object(HeadHunterAPI, "vacancies")
+@patch.object(HeadHunterAPI, 'get_vacancies')
+@patch('builtins.input', return_value='python')
+def test_query_to_search(mocked_input, mocked_hh_api, mocked_vac, mocked_save, mocked_vac_class, lisf_of_dicts_api) -> None:
+    """ Тестирование метода запроса поисковой строки от Пользователя и ее обработки. """
+    user = User()
+    user.query_to_search()
+
+    # mocked_vac.return_value = [{'name': 'python'}, {'name': 'java'}]
+    # mocked_vac_class.return_value = [{'name': 'python'}, {'name': 'java'}]
+    # mocked_hh_api.return_value = lisf_of_dicts_api
+
+    mocked_save.assert_called_once()
+    mocked_vac_class.assert_called_once()
 
 
 @patch('src.User.user_menu', side_effect=[0, 1, 2])
-def test_filter_vacancies(mocked_choice, some_test_list_of_objects):
+def test_filter_vacancies(mocked_choice, some_test_list_of_objects) -> None:
+    """ Тестирование метода фильтрации вакансий. """
     user = User()
     user.vacancies = some_test_list_of_objects
 
@@ -47,13 +62,41 @@ def test_filter_vacancies(mocked_choice, some_test_list_of_objects):
         mock_ask.assert_called_once()
 
 
-def test_sort_vacancies() -> None:
-    pass
+@patch('src.User.user_menu', side_effect=[0, 1])
+def test_sort_vacancies(mocked_choice, some_test_list_of_objects, sorted_vacancies) -> None:
+    """ Тестирование метода сортировки вакансий. """
+    user = User()
+    user.vacancies = some_test_list_of_objects
+    user.sort_vacancies()
+
+    assert mocked_choice.call_count == 2
+    assert user.vacancies == sorted_vacancies
 
 
-def test_get_top_n() -> None:
-    pass
+@patch('src.User.ask_to_save')
+@patch('src.User.output_to_console')
+@patch('builtins.input', return_value=3)
+def test_get_top_n(mocked_input, mocked_output, mocked_ask, some_test_list_of_objects, top_3_vacancies) -> None:
+    """ Тестирование метода топ зарплат. """
+    user = User()
+    user.vacancies = some_test_list_of_objects
+    user.get_top_n()
+    user.vacancies.sort(key=lambda x: x.salary, reverse=True)
+
+    assert user.vacancies[:mocked_input.return_value] == top_3_vacancies
+    mocked_output.assert_called_once()
+    mocked_ask.assert_called_once()
 
 
-def test_delete_vacancies() -> None:
-    pass
+@patch('src.User.ask_to_save')
+@patch('src.User.output_to_console')
+@patch('builtins.input', return_value='python')
+def test_delete_vacancies(mocked_input, mocked_output, mocked_ask, some_test_list_of_objects, after_deletion) -> None:
+    """ Тестирование метода удаления вакансий. """
+    user = User()
+    user.vacancies = some_test_list_of_objects
+    user.delete_vacancies()
+
+    assert [x for x in user.vacancies if mocked_input.return_value.lower() not in x.name.lower()] == after_deletion
+    mocked_output.assert_called_once()
+    mocked_ask.assert_called_once()
