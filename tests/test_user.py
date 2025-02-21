@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
+from src.constants import FILTER_MENU
 from src.HeadHunterAPI import HeadHunterAPI
 from src.JSONSaver import JSONSaver
 from src.User import User
 from src.Vacancy import Vacancy
-from src.constants import FILTER_MENU
 
 
 @patch.object(Vacancy, 'cast_to_object_list')
@@ -12,14 +12,10 @@ from src.constants import FILTER_MENU
 @patch.object(HeadHunterAPI, "vacancies")
 @patch.object(HeadHunterAPI, 'get_vacancies')
 @patch('builtins.input', return_value='python')
-def test_query_to_search(mocked_input, mocked_hh_api, mocked_vac, mocked_save, mocked_vac_class, lisf_of_dicts_api) -> None:
+def test_query_to_search(mocked_input, mocked_hh_api, mocked_vac, mocked_save, mocked_vac_class) -> None:
     """ Тестирование метода запроса поисковой строки от Пользователя и ее обработки. """
     user = User()
     user.query_to_search()
-
-    # mocked_vac.return_value = [{'name': 'python'}, {'name': 'java'}]
-    # mocked_vac_class.return_value = [{'name': 'python'}, {'name': 'java'}]
-    # mocked_hh_api.return_value = lisf_of_dicts_api
 
     mocked_save.assert_called_once()
     mocked_vac_class.assert_called_once()

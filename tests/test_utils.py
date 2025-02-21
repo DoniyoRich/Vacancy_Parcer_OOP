@@ -13,19 +13,3 @@ def test_convert_to_list(some_test_list_of_objects):
     assert converted[5]['должность'] == 'Senior Python Developer'
     assert converted[5]['ссылка на вакансию'] == 'http://blabla68.ru'
     assert converted[6]['регион'] == 'Екатеринбург'
-
-
-def test_user_menu() -> None:
-    pass
-
-
-def test_saving_file() -> None:
-    pass
-
-
-def test_ask_to_save() -> None:
-    pass
-
-
-def test_output_to_console() -> None:
-    pass

@@ -1,9 +1,9 @@
 import json
 
-from src.Vacancy import Vacancy
-from src.constants import TEST_DATA_SETS
-
 import pytest
+
+from src.constants import TEST_DATA_SETS
+from src.Vacancy import Vacancy
 
 
 @pytest.fixture
